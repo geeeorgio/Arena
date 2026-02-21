@@ -1,0 +1,28 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    // Required for NestJS decorators — @Module(), @Controller(), @Injectable()
+    "experimentalDecorators": true,
+
+    // Required for dependency injection to work in NestJS
+    "emitDecoratorMetadata": true,
+
+    // Each file compilable independently — needed for NestJS build
+    "isolatedModules": true,
+
+    // Removes comments in compiled output — cleaner production code
+    "removeComments": true,
+
+    "rootDir": ".",
+    "outDir": "dist",
+
+    // Needed for Project References
+    "composite": true,
+    "paths": {
+      "@/*": ["src/*"],
+      "@arena/shared": ["../../packages/shared/src/index.ts"]
+    }
+  },
+  "include": ["src/**/*", "test/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

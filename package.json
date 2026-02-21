@@ -9,14 +9,28 @@
   "scripts": {
     "dev": "yarn workspaces run dev",
     "build": "yarn workspaces run build",
-    "api:dev": "yarn workspace @arena/api dev",
+    "api:dev": "yarn workspace @arena/api start:dev",
     "web:dev": "yarn workspace @arena/web dev",
     "db:up": "docker-compose up -d",
-    "db:down": "docker-compose down"
+    "db:down": "docker-compose down",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write ."
   },
   "dependencies": {},
   "devDependencies": {
-    "typescript": "5.9.3"
+    "eslint": "^9.39.2",
+    "@eslint/js": "^9.39.2",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-prettier": "5.5.5",
+    "eslint-plugin-unused-imports": "4.4.1",
+    "globals": "17.3.0",
+    "husky": "9.1.7",
+    "lint-staged": "16.2.7",
+    "prettier": "3.8.1",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.56.0"
   },
   "engines": {
     "node": "24.x"

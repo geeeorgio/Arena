@@ -1,0 +1,11 @@
+{
+  // Inherit from api tsconfig
+  "extends": "./tsconfig.json",
+
+  "compilerOptions": {
+    "rootDir": "src"
+  },
+
+  // Exclude test files from production build
+  "exclude": ["node_modules", "test", "dist", "**/*spec.ts"]
+}

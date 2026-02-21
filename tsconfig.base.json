@@ -10,9 +10,6 @@
     // Compile to modern JavaScript
     "target": "ESNext",
 
-    // Allow project to be used with project references
-    "composite": true,
-
     // Generate .map files — debug shows errors in .ts not compiled .js
     "sourceMap": true,
 
@@ -49,6 +46,6 @@
     "noImplicitReturns": true,
 
     // Every switch case must have break or return
-    "noFallthroughCasesInSwitch": true,
+    "noFallthroughCasesInSwitch": true
   }
 }

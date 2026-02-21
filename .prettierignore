@@ -1,0 +1,33 @@
+# Build outputs
+dist
+out
+build
+.next
+.swc
+.turbo
+
+# Dependencies
+node_modules
+
+# Logs & cache
+*.log
+.cache
+.temp
+
+# Lock files — don't format these
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Compiled assets
+*.min.js
+*.min.css
+*.map
+
+# Coverage
+coverage
+*.lcov
+
+# IDE
+.idea
+.vscode

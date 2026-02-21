@@ -7,7 +7,9 @@
     "outDir": "./dist",
 
     // All source TypeScript files are here
-    "rootDir": "./src"
+    "rootDir": "./src",
+
+    "composite": true
   },
 
   // Only look at files inside src/
