@@ -1,0 +1,21 @@
+{
+  "name": "arena",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "yarn workspaces run dev",
+    "build": "yarn workspaces run build",
+    "api:dev": "yarn workspace @arena/api dev",
+    "web:dev": "yarn workspace @arena/web dev",
+    "db:up": "docker-compose up -d",
+    "db:down": "docker-compose down"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "5.9.3"
+  }
+}

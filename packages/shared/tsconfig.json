@@ -1,0 +1,15 @@
+{
+  // Inherit all settings from root config
+  "extends": "../../tsconfig.base.json",
+
+  "compilerOptions": {
+    // Compiled JS output goes here
+    "outDir": "./dist",
+
+    // All source TypeScript files are here
+    "rootDir": "./src"
+  },
+
+  // Only look at files inside src/
+  "include": ["src/**/*"]
+}
