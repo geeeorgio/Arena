@@ -1,7 +1,12 @@
 {
+  // Inherits global TS rules (strict mode, etc.)
   "extends": "./tsconfig.base.json",
+
+  // The root config itself doesn't compile any source files
   "files": [],
+
   "references": [
+    // Directs TS to look into specific sub-projects for type checking
     { "path": "./packages/shared" },
     { "path": "./apps/api" }
   ]

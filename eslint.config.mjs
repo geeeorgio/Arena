@@ -20,8 +20,8 @@ import unusedImports from 'eslint-plugin-unused-imports';
 import globals from 'globals';
 
 // Node.js built-ins for resolving file paths in ESM
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 
 // ESM modules don't have __dirname — reconstruct it manually
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -35,6 +35,7 @@ export default defineConfig(
       '**/.next/**', // Next.js build output
       '**/coverage/**', // Test coverage reports
       '**/build/**', // Other build outputs
+      '**/*.config.ts', // prisma.config.ts, jest.config.ts ...etc
     ],
   },
 
@@ -49,7 +50,7 @@ export default defineConfig(
       prettierConfig, // Disable formatting rules (Prettier handles those)
     ],
 
-    // Register plugins so we can use their rules
+    // Register plugins to use their rules
     plugins: {
       import: importPlugin,
       'unused-imports': unusedImports,
@@ -75,7 +76,7 @@ export default defineConfig(
     },
 
     rules: {
-      // Disable default TS unused vars — we use unused-imports plugin instead
+      // Disable default TS unused vars — use unused-imports plugin instead
       '@typescript-eslint/no-unused-vars': 'off',
 
       // Error if an import is present but never used in the file
@@ -83,7 +84,7 @@ export default defineConfig(
 
       // Error for unused variables — except those prefixed with _
       'unused-imports/no-unused-vars': [
-        'error',
+        'warn',
         {
           vars: 'all',
           varsIgnorePattern: '^_', // _foo is intentionally unused

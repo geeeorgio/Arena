@@ -13,8 +13,8 @@
     // Removes comments in compiled output — cleaner production code
     "removeComments": true,
 
-    "rootDir": ".",
-    "outDir": "dist",
+    "rootDir": "src",
+    "outDir": "./dist",
 
     // Needed for Project References
     "composite": true,
@@ -23,6 +23,6 @@
       "@arena/shared": ["../../packages/shared/src/index.ts"]
     }
   },
-  "include": ["src/**/*", "test/**/*"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
 }

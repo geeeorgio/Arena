@@ -1,0 +1,23 @@
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { PrismaPg } from '@prisma/adapter-pg';
+
+// Import from generated path — not from @prisma/client
+import { PrismaClient } from '../generated/prisma/client';
+
+@Injectable()
+// Extends PrismaClient so this service IS a Prisma Client
+// — callers can do prismaService.user.findMany()
+export class PrismaService extends PrismaClient {
+  constructor(configService: ConfigService) {
+    // Get the connection string from ConfigService (reads from .env via ConfigModule)
+    const connectionString = configService.get<string>('DATABASE_URL');
+
+    // PrismaPg is node-postgres driver adapter: bridges Prisma ↔ pg library
+    // Must receive an object with connectionString field, not a raw string
+    const adapter = new PrismaPg({ connectionString });
+
+    // Pass adapter to PrismaClient base constructor
+    super({ adapter });
+  }
+}

@@ -1,25 +1,25 @@
 services:
   postgres:
-    image: postgres:15-alpine
-    container_name: arena_db
+    image: postgres:15-alpine # Lightweight Linux OS with PostgreSQL 15 installed
+    container_name: arena_db # Explicit name for the container (useful for logs/CLI)
     environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER} # Initial database username from .env
+      POSTGRES_PASSWORD: ${DB_PASSWORD} # Initial database password from .env
+      POSTGRES_DB: ${DB_NAME} # Name of the default database created on startup
     ports:
-      - "${DB_PORT}:5432"
+      - '${DB_PORT}:5432' # Maps [Host Machine Port] to [Container Port 5432]
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data # Persists DB data even if container is deleted
 
   redis:
-    image: redis:7-alpine
-    container_name: arena_redis
+    image: redis:7-alpine # Lightweight Linux OS with Redis 7
+    container_name: arena_redis # Explicit name for the Redis container
     ports:
-      - "${REDIS_PORT}:6379"
+      - '${REDIS_PORT}:6379' # Standard Redis port mapping
     volumes:
-      - redis_data:/data
-    command: redis-server --appendonly yes
+      - redis_data:/data # Persists cache/session data
+    command: redis-server --appendonly yes # Enables AOF (recovers data after restarts)
 
 volumes:
-  postgres_data:
-  redis_data:
+  postgres_data: # Declares a managed volume for PostgreSQL persistence
+  redis_data: # Declares a managed volume for Redis persistence

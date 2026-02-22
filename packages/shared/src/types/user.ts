@@ -1,7 +1,15 @@
 export interface User {
-  id: string;
+  id: number;
   email: string;
   username: string;
   rating: number;
-  createdAt: Date;
+  createdAt: string;
+  updatedAt: string;
+  isActive: boolean;
+}
+
+export interface CreateUserDto {
+  email: string;
+  username: string;
+  password?: string;
 }
