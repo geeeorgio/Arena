@@ -1,5 +1,5 @@
-export interface User {
-  id: number;
+export interface IUser {
+  id: string;
   email: string;
   username: string;
   rating: number;
@@ -8,8 +8,7 @@ export interface User {
   isActive: boolean;
 }
 
-export interface CreateUserDto {
+export interface ICreateUserDto {
   email: string;
   username: string;
-  password?: string;
 }
