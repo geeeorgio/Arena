@@ -1,13 +1,11 @@
 import { Controller, Get } from '@nestjs/common';
 
-import { AppService } from './app.service';
-
+// Root controller — handles infrastructure-level endpoints
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
-
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  // Health check endpoint — used by Docker/load balancers to verify service is alive
+  @Get('health')
+  health() {
+    return { status: 'ok', timestamp: new Date().toISOString() };
   }
 }

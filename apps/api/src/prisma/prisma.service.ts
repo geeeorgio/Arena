@@ -20,4 +20,12 @@ export class PrismaService extends PrismaClient {
     // Pass adapter to PrismaClient base constructor
     super({ adapter });
   }
+
+  async onModuleInit() {
+    await this.$connect();
+  }
+
+  async onModuleDestroy() {
+    await this.$disconnect();
+  }
 }
