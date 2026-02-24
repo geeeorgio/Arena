@@ -13,7 +13,7 @@ export class UsersController {
   // Tells Swagger what shape this endpoint returns
   @ApiOkResponse({ type: PublicUserDto, isArray: true })
   @Get()
-  async findAll(): Promise<PublicUserDto[]> {
+  async findAll() {
     return this.userService.findAll();
   }
 }
