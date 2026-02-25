@@ -1,15 +1,18 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
 import { StringValue } from 'ms';
 
 import { UsersModule } from '../users/users.module';
 
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   imports: [
+    PassportModule,
     UsersModule,
     JwtModule.registerAsync({
       // Makes JwtService available without importing JwtModule elsewhere
@@ -20,20 +23,14 @@ import { AuthService } from './auth.service';
 
       // Factory runs after ConfigService is ready — env variables are guaranteed to be loaded
       useFactory: (config: ConfigService) => {
-        const secret = config.get<string>('JWT_SECRET');
+        // Safe: env variables validated at startup in validateEnv()
+        const secret = config.get<string>('JWT_SECRET')!;
         const expiresIn = (config.get<string>('JWT_EXPIRES_IN') ||
           '15m') as StringValue;
-
-        // Fail fast: crash on startup if secret is missing
-        // Better to fail now than to run the API without token protection
-        if (!secret) {
-          throw new Error('.env variable JWT_SECRET is missing!');
-        }
 
         return {
           secret: secret,
           signOptions: {
-            // How long the access token is valid
             expiresIn: expiresIn,
           },
         };
@@ -41,6 +38,6 @@ import { AuthService } from './auth.service';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, JwtStrategy],
 })
 export class AuthModule {}

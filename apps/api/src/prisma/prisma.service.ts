@@ -10,8 +10,9 @@ import { PrismaClient } from '../generated/prisma/client';
 // — callers can do prismaService.user.findMany()
 export class PrismaService extends PrismaClient {
   constructor(configService: ConfigService) {
-    // Get the connection string from ConfigService (reads from .env via ConfigModule)
-    const connectionString = configService.get<string>('DATABASE_URL');
+    // Сonnection string from ConfigService (reads from .env)
+    // Safe: validated at startup in validateEnv()
+    const connectionString = configService.get<string>('DATABASE_URL')!;
 
     // PrismaPg is node-postgres driver adapter: bridges Prisma ↔ pg library
     // Must receive an object with connectionString field, not a raw string
