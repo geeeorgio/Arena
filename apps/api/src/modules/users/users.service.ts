@@ -12,7 +12,12 @@ export class UsersService {
   async findAll(): Promise<PublicUserDto[]> {
     return this.prisma.user.findMany({
       //...without selected fields
-      omit: { password: true, email: true, updatedAt: true },
+      omit: {
+        password: true,
+        email: true,
+        updatedAt: true,
+        birthDate: true,
+      },
     });
   }
 

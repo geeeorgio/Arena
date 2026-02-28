@@ -9,4 +9,5 @@ export class PublicUserDto extends OmitType(UserEntity, [
   'password',
   'email',
   'updatedAt',
+  'birthDate',
 ] as const) {}

@@ -15,16 +15,180 @@ datasource db {
   // URL injected prisma.config.ts at CLI time, and ConfigService at runtime
 }
 
+// ────────── User account ──────────
+
 model User {
-  id        String @id @default(cuid(2))
-  email     String @unique
-  username  String @unique
-  password  String
+  id          String     @id @default(cuid(2))
+  email       String     @unique
+  username    String     @unique
+  password    String     // bcrypt hash, never raw
 
-  rating    Int @default(1000)
+  birthDate   DateTime?  @map("birth_date") // to determine TEEN mode
+  role        UserRole   @default(ADULT)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt      @map("updated_at")
 
-  isActive  Boolean @default(false)
+  // Relations
+  cycles      Cycle[]           // all cycles logged by this user
+  settings    UserSettings?     // one-to-one, created on first login
+
+  parentLinks ParentChildLink[] @relation("child")  // I am the child
+  childLinks  ParentChildLink[] @relation("parent") // I am the parent
+
+  @@map("users")
+}
+
+// ────────── Cycles ──────────
+
+model Cycle {
+  id          String    @id @default(cuid(2))
+  userId      String    @map("user_id")
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  startDate   DateTime  @map("start_date")
+  endDate     DateTime? @map("end_date") // null = cycle is still ongoing
+  length      Int?      // computed on cycle close: endDate - startDate
+  isIrregular Boolean   @default(false) @map("is_irregular") // true if length deviates from user average
+
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  days        CycleDay[] // daily logs within this cycle
+
+  @@map("cycles")
+}
+
+// ────────── Daily log ──────────
+
+model CycleDay {
+  id         String @id @default(cuid(2))
+
+  cycleId    String @map("cycle_id")
+  cycle      Cycle  @relation(fields: [cycleId], references: [id], onDelete: Cascade)
+
+  date       DateTime // one entry per day per cycle see @@unique below
+
+  flow     FlowLevel? // what is the flow today
+  mood     UserMood[] // multiple moods allowed per day
+  symptoms String[]   // free-form symptom tags e.g. ["cramps", "headache"]
+  note     String?    // optional; shown to parent only if canViewNotes
+
+  @@unique([cycleId, date]) // prevents duplicate entries for same day
+  @@index([cycleId, date])  // speeds up calendar queries
+
+  @@map("cycle_days")
+}
+
+// ────────── Settings ──────────
+
+model UserSettings {
+  id                 String   @id @default(cuid(2))
+  userId             String   @unique
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // used for next-cycle prediction
+  avgCycleDays       Int     @default(28)    @map("avg_cycle_days")
+
+  // used for fertile window calc
+  avgPeriodDays      Int     @default(5)     @map("avg_period_days")
+
+  // enable notification & how many days before cycle to notify
+  reminderEnabled    Boolean @default(false) @map("reminder_enabled")
+  reminderDaysBefore Int     @default(2)     @map("reminder_days_before")
+
+  @@map("user_settings")
+}
+
+// ────────── Parent ↔ Teen connection ──────────
+
+model ParentChildLink {
+  id              String     @id @default(cuid(2))
+
+  parentId        String     @map("parent_id")
+  parent          User       @relation("parent", fields: [parentId], references: [id], onDelete: Cascade)
+
+  childId         String     @map("child_id")
+  child           User       @relation("child", fields: [childId], references: [id], onDelete: Cascade)
+
+  // Access permissions — teen controls what the parent can see
+  canViewMood     Boolean    @default(true)  @map("can_view_mood")
+  canViewCycles   Boolean    @default(false)  @map("can_view_cycles")
+  canViewSymptoms Boolean    @default(false) @map("can_view_symptoms")
+  canViewNotes    Boolean    @default(false) @map("can_view_notes")
+
+  // teen sends invite → parent accepts
+  status          LinkStatus @default(PENDING)
+  inviteCode      String?    @unique @map("invite_code") // null after ACTIVE
+
+  createdAt       DateTime   @default(now()) @map("created_at")
+
+  notifications ParentNotification[] // all notifications sent through this link
+
+  @@unique([parentId, childId]) // one link per parent-child pair
+
+  @@map("parent_child_links")
+}
+
+// ──────── Notifications sent to parent ────────
+
+model ParentNotification {
+  id        String          @id @default(cuid(2))
+  linkId    String          @map("link_id")
+  link      ParentChildLink @relation(fields: [linkId], references: [id], onDelete: Cascade)
+
+  type      NotificationType // what triggered this notification
+  message   String           // ext shown in parent dashboard
+  isRead    Boolean         @default(false) @map("is_read")
+
+  createdAt DateTime        @default(now()) @map("created_at")
+
+  @@map("parent_notifications")
+}
+
+// ────────── Enums ──────────
+
+enum UserRole {
+  TEEN  // under 18, can link to a parent account
+  ADULT // standard account, no parent linking
+
+  @@map("enum_user_role")
+}
+
+enum UserMood {
+  HAPPY
+  CALM
+  ANXIOUS
+  IRRITABLE
+  SAD
+  ENERGETIC
+  TIRED
+
+  @@map("enum_user_mood")
+}
+
+enum FlowLevel {
+  NONE
+  SPOTTING
+  LIGHT
+  MEDIUM
+  HEAVY
+
+  @@map("enum_flow_level")
+}
+
+enum LinkStatus {
+  PENDING // invite sent, waiting for parent to accept
+  ACTIVE  // connection established
+  REVOKED // teen removed parent access
+
+  @@map("enum_link_status")
+}
+
+enum NotificationType {
+  CYCLE_STARTING_SOON // predicted cycle starts within N days
+  CYCLE_STARTED       // cycle start was logged today
+  MOOD_CONCERN        // 3+ consecutive days of SAD or ANXIOUS
+  NOTE_FLAGGED        // teen manually flagged a note for parent to see
+
+  @@map("enum_notification_type")
 }
