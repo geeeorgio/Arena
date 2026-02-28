@@ -7,8 +7,3 @@ export interface IUser {
   updatedAt: string;
   isActive: boolean;
 }
-
-export interface ICreateUserDto {
-  email: string;
-  username: string;
-}

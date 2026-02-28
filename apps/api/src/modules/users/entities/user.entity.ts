@@ -1,4 +1,4 @@
-import type { User, UserRole } from '../../../generated/prisma/client';
+import type { Gender, User, UserRole } from '../../../generated/prisma/client';
 // Mirrors the Prisma User model as a class
 // implements User — TypeScript enforces that all Prisma fields are present
 
@@ -10,7 +10,8 @@ export class UserEntity implements User {
   password!: string;
 
   birthDate!: Date | null;
-  role!: UserRole;
+  role!: UserRole | null;
+  gender!: Gender | null;
 
   createdAt!: Date;
   updatedAt!: Date;

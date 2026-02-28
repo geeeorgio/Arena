@@ -18,23 +18,25 @@ datasource db {
 // ────────── User account ──────────
 
 model User {
-  id          String     @id @default(cuid(2))
-  email       String     @unique
-  username    String     @unique
-  password    String     // bcrypt hash, never raw
+  id              String     @id @default(cuid(2))
+  email           String     @unique
+  username        String     @unique
+  password        String     // bcrypt hash, never raw
+  birthDate       DateTime?  @map("birth_date") // to determine TEEN mode
 
-  birthDate   DateTime?  @map("birth_date") // to determine TEEN mode
-  role        UserRole   @default(ADULT)
+  createdAt       DateTime   @default(now()) @map("created_at")
+  updatedAt       DateTime   @updatedAt      @map("updated_at")
 
-  createdAt   DateTime   @default(now()) @map("created_at")
-  updatedAt   DateTime   @updatedAt      @map("updated_at")
+  // Onboarding
+  role            UserRole?
+  gender          Gender?
 
   // Relations
-  cycles      Cycle[]           // all cycles logged by this user
-  settings    UserSettings?     // one-to-one, created on first login
+  cycles          Cycle[]           // all cycles logged by this user
+  settings        UserSettings?     // one-to-one, created on first login
 
-  parentLinks ParentChildLink[] @relation("child")  // I am the child
-  childLinks  ParentChildLink[] @relation("parent") // I am the parent
+  parentLinks     ParentChildLink[] @relation("child")  // I am the child
+  childLinks      ParentChildLink[] @relation("parent") // I am the parent
 
   @@map("users")
 }
@@ -148,10 +150,19 @@ model ParentNotification {
 // ────────── Enums ──────────
 
 enum UserRole {
-  TEEN  // under 18, can link to a parent account
-  ADULT // standard account, no parent linking
+  TEEN    // under 18
+  ADULT   // female, tracking cycles
+  PARENT  // parent/partner, views child dashboard
 
   @@map("enum_user_role")
+}
+
+enum Gender {
+  FEMALE
+  MALE
+  OTHER
+
+  @@map("enum_gender")
 }
 
 enum UserMood {
